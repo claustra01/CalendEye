@@ -4,6 +4,7 @@ on:
     paths:
       - "bot/**"
 jobs:
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -13,3 +14,13 @@ jobs:
         uses: actions/setup-go@v5
       - name: static check
         run: cd bot && make ci_lint
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup
+        uses: actions/setup-go@v5
+      - name: static check
+        run: cd bot && make build
