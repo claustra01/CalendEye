@@ -1,10 +1,10 @@
-import liff from "@line/liff";
-import { useEffect, useState } from "react";
-import "./App.css";
+import liff from '@line/liff';
+import { useEffect, useState } from 'react';
+import './App.css';
 
 function App() {
-	const [message, setMessage] = useState("");
-	const [error, setError] = useState("");
+	const [message, setMessage] = useState('');
+	const [error, setError] = useState('');
 
 	useEffect(() => {
 		liff
@@ -12,10 +12,10 @@ function App() {
 				liffId: import.meta.env.VITE_LIFF_ID,
 			})
 			.then(() => {
-				setMessage("LIFF init succeeded.");
+				setMessage('LIFF init succeeded.');
 			})
 			.catch((e: Error) => {
-				setMessage("LIFF init failed.");
+				setMessage('LIFF init failed.');
 				setError(`${e}`);
 			});
 	});
