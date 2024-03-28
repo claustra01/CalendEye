@@ -1,0 +1,27 @@
+name: web-ci
+on: 
+  push:
+    paths: 
+      - "web/**"
+      
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup
+        uses: actions/setup-node@v4
+      - name: static check
+        run: cd web && npm install && npm run ci:check
+
+  build: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup
+        uses: actions/setup-node@v4
+      - name: build
+        run: cd web && npm install && npm run build
