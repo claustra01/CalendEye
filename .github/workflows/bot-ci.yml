@@ -1,7 +1,8 @@
-name: ci
-on: push
+name: bot-ci
+on: 
+  push:
+    path: "bot/**"
 jobs:
-
   lint:
     runs-on: ubuntu-latest
     steps:

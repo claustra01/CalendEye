@@ -1,7 +1,8 @@
-name: ci
-on: push
+name: web-ci
+on: 
+  push:
+    path: "web/**"
 jobs:
-
   lint:
     runs-on: ubuntu-latest
     steps:
