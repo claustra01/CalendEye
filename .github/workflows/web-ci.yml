@@ -10,4 +10,4 @@ jobs:
       - name: setup
         uses: actions/setup-node@v4
       - name: static check
-        run: cd web && npm run ci:check
+        run: cd web && npm install && npm run ci:check
