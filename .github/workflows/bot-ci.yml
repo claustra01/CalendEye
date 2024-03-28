@@ -13,7 +13,7 @@ jobs:
       - name: setup
         uses: actions/setup-go@v5
       - name: static check
-        run: cd bot && make ci_lint
+        run: cd bot && make ci-lint
 
   build:
     runs-on: ubuntu-latest
