@@ -10,4 +10,4 @@ jobs:
       - name: setup
         uses: actions/setup-go@v5
       - name: static check
-        run: make env && make lint
+        run: cd bot && make env && make lint
