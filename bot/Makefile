@@ -6,4 +6,6 @@ env:
 lint:
 	$$(go env GOPATH)/bin/golangci-lint run ./...
 
-# hoge
+ci_lint:
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	$$(go env GOPATH)/bin/golangci-lint run ./...
