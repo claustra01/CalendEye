@@ -1,6 +1,10 @@
-.PHONY: env lint
+.PHONY: build env lint
+
+build:
+	go build -o build/calendeye
 
 env:
+	go mod tidy
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 lint:
