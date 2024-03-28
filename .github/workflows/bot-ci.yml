@@ -1,0 +1,13 @@
+name: ci
+on: push
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup
+        uses: actions/setup-go@v5
+      - name: static check
+        run: make env && make lint

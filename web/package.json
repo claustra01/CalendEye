@@ -7,7 +7,8 @@
 		"preview": "vite preview",
 		"fmt": "biome format --write ./**",
 		"lint": "biome lint --apply ./**",
-		"check": "biome check --apply ./**"
+		"check": "biome check --apply ./**",
+		"ci:check": "biome check ./**"
 	},
 	"dependencies": {
 		"@line/liff": "2.23.2",
