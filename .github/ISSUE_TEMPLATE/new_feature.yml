@@ -1,0 +1,43 @@
+# new_feature.yml
+name: New Feature Proposal / 新機能の追加
+description: Use this template to propose new features / 新しい機能の提案はこちら
+title: 'Feature: '
+
+body:
+  - type: textarea
+    id: overview
+    attributes:
+      label: Overview / 概要
+      description: |
+        Describe an overview of the new feature proposal.
+        新機能の概要を記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / 提案の動機
+      description: |
+        Specify the motivation behind the proposal and its advantages.
+        新機能の提案の動機や利点を記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation / 実装案
+      description: |
+        Provide ideas or methods for implementing the new feature.
+        新機能の実装方法やアイデアを記載してください。
+    validations:
+      required: false
+      
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives / 代替案
+      description: |
+        If there are alternative proposals or any other considerations, please mention them.
+        代替案やその他の考えがあれば記載してください。

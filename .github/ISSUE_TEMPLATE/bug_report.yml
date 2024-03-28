@@ -1,0 +1,55 @@
+# bug_report.yml
+name: Bug Report / バグ報告
+description: Use this template to report bugs / 不具合報告はこちら
+title: 'Bug: '
+
+body:
+  - type: textarea
+    id: overview
+    attributes:
+      label: Overview / 概要
+      description: |
+        Describe the overview of the bug.
+        If it's related to visual aspects, please attach screenshots.
+        不具合の概要を記載してください。
+        見た目に関係する場合は、スクリーンショット等を貼り付けてください。
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Reproduction Environment / 再現環境
+      description: |
+        Specify the reproduction environment and the application version.
+        再現環境とアプリのバージョンを記載してください。
+        e.g.
+        Windows 11, Google Chrome / v1.0.0
+        Windows 11, Microsoft Edge / v0.3.1
+        macOS 12, Firefox / v4.2.0
+        iOS 17, Safari / beta-1.8.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: process
+    attributes:
+      label: Reproduction Steps / 再現手順
+      description: |
+        Provide the steps to reproduce the bug.
+        不具合を再現させる手順を記載してください。
+      value: |
+        1. 
+        2. 
+        3. 
+        ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: supplement
+    attributes:
+      label: Supplementary Information / 補足
+      description: |
+        Add any additional information if necessary.
+        その他補足情報があれば記載してください。

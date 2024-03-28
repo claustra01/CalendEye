@@ -1,0 +1,53 @@
+# enhancement.yml
+name: Enhancement Proposal / 機能の強化
+description: Use this template to propose enhancements or improvements / 機能の改善や拡張に関する提案はこちら
+title: 'Enhancement: '
+
+body:
+  - type: textarea
+    id: overview
+    attributes:
+      label: Overview / 概要
+      description: |
+        Describe an overview of the enhancement proposal.
+        機能の強化に関する概要を記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / 動機
+      description: |
+        Specify the motivation behind the enhancement or improvement.
+        機能の改善や拡張の動機を記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current Behavior / 現在の動作
+      description: |
+        Describe the current behavior of the feature or any existing issues.
+        現在の機能の挙動や問題点を記載してください。
+    validations:
+      required: false
+
+  - type: textarea
+    id: suggested_solution
+    attributes:
+      label: Suggested Solution / 提案される解決策
+      description: |
+        Provide the suggested solution for enhancing or improving the feature.
+        機能の改善や拡張のための提案される解決策を記載してください。
+    validations:
+      required: true
+      
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives / 代替案
+      description: |
+        If there are alternative proposals or any other considerations, please mention them.
+        代替案やその他の考えがあれば記載してください。
