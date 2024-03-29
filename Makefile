@@ -1,12 +1,20 @@
 include .env.local
 
-.PHONY: up down push
+.PHONY: env up down lint push
+
+env:
+	cd bot && make env
+	cd web && npm install
 
 up:
 	docker compose up -d --build
 
 down:
 	docker-compose down
+
+lint:
+	cd bot && make lint
+	cd web && npm run check
 
 push:
 	docker login $(ACR_HOST) -u $(ACR_USER) -p $(ACR_PASSWORD)

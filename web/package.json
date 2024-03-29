@@ -5,10 +5,10 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"fmt": "biome format --write ./**",
-		"lint": "biome lint --apply ./**",
-		"check": "biome check --apply ./**",
-		"ci:check": "biome check ./**"
+		"fmt": "biome format --write src/**",
+		"lint": "biome lint --apply src/**",
+		"check": "biome check src/**",
+		"ci:check": "biome check src/**"
 	},
 	"dependencies": {
 		"@line/liff": "2.23.2",
@@ -27,3 +27,4 @@
 		"node": "20.12.0"
 	}
 }
+
