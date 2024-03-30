@@ -2,6 +2,7 @@ package linebot
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 	"path"
@@ -15,6 +16,10 @@ type LineBot struct {
 }
 
 func NewBot(channelToken string) (*LineBot, error) {
+	if channelToken == "" {
+		return nil, errors.New("channelToken is required")
+	}
+
 	c := &LineBot{
 		httpClient:   http.DefaultClient,
 		channelToken: channelToken,
