@@ -12,6 +12,9 @@ up:
 down:
 	docker-compose down
 
+test:
+	cd bot && make test
+
 lint:
 	cd bot && make lint
 	cd web && npm run check
