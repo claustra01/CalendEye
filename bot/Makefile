@@ -7,6 +7,9 @@ env:
 	go mod tidy
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
+test:
+	go test ./...
+
 lint:
 	$$(go env GOPATH)/bin/golangci-lint run ./...
 
