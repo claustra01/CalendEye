@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/claustra01/calendeye/db"
 	"github.com/claustra01/calendeye/handler"
 	"github.com/claustra01/calendeye/linebot"
 	"github.com/joho/godotenv"
@@ -18,6 +19,9 @@ func main() {
 			log.Fatal("Error loading .env file")
 		}
 	}
+
+	// Connect to database
+	db.Psql = db.Connect()
 
 	// Get channel secret and channel token from environment variables
 	channelSecret := os.Getenv("LINE_CHANNEL_SECRET")
