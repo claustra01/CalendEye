@@ -8,19 +8,19 @@ import (
 
 func TestNewBot(t *testing.T) {
 	tests := []struct {
-		name          string
-		channelToken  string
-		expectedError error
+		name         string
+		channelToken string
+		wantErr      error
 	}{
 		{
-			name:          "Valid channel token",
-			channelToken:  "token",
-			expectedError: nil,
+			name:         "Valid channel token",
+			channelToken: "token",
+			wantErr:      nil,
 		},
 		{
-			name:          "Empty channel token",
-			channelToken:  "",
-			expectedError: ErrNoChannelToken,
+			name:         "Empty channel token",
+			channelToken: "",
+			wantErr:      ErrNoChannelToken,
 		},
 	}
 
@@ -28,8 +28,8 @@ func TestNewBot(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := NewBot(tt.channelToken)
 
-			if err != tt.expectedError {
-				t.Errorf("got error %v; want %v", err, tt.expectedError)
+			if err != tt.wantErr {
+				t.Errorf("got error %v; want %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -37,19 +37,19 @@ func TestNewBot(t *testing.T) {
 
 func TestUrl(t *testing.T) {
 	tests := []struct {
-		name     string
-		path     string
-		expected string
+		name string
+		path string
+		want string
 	}{
 		{
-			name:     "Valid path",
-			path:     "/v2/bot/message/reply",
-			expected: "https://api.line.me/v2/bot/message/reply",
+			name: "Valid path",
+			path: "/v2/bot/message/reply",
+			want: "https://api.line.me/v2/bot/message/reply",
 		},
 		{
-			name:     "Empty path",
-			path:     "",
-			expected: "https://api.line.me",
+			name: "Empty path",
+			path: "",
+			want: "https://api.line.me",
 		},
 	}
 
@@ -58,8 +58,8 @@ func TestUrl(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			url := bot.Url(tt.path)
 
-			if url != tt.expected {
-				t.Errorf("got %s; want %s", url, tt.expected)
+			if url != tt.want {
+				t.Errorf("got %s; want %s", url, tt.want)
 			}
 		})
 	}
