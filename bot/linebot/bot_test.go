@@ -37,19 +37,19 @@ func TestNewBot(t *testing.T) {
 
 func TestUrl(t *testing.T) {
 	tests := []struct {
-		name string
-		path string
-		want string
+		name     string
+		path     string
+		expected string
 	}{
 		{
-			name: "Valid path",
-			path: "/v2/bot/message/reply",
-			want: "https://api.line.me/v2/bot/message/reply",
+			name:     "Valid path",
+			path:     "/v2/bot/message/reply",
+			expected: "https://api.line.me/v2/bot/message/reply",
 		},
 		{
-			name: "Empty path",
-			path: "",
-			want: "https://api.line.me",
+			name:     "Empty path",
+			path:     "",
+			expected: "https://api.line.me",
 		},
 	}
 
@@ -58,8 +58,8 @@ func TestUrl(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			url := bot.Url(tt.path)
 
-			if url != tt.want {
-				t.Errorf("got %s; want %s", url, tt.want)
+			if url != tt.expected {
+				t.Errorf("got %s; want %s", url, tt.expected)
 			}
 		})
 	}
