@@ -21,7 +21,7 @@ func main() {
 	}
 
 	// Connect to database
-	db.Psql = db.Connect()
+	db.DB.Connect()
 
 	// Get channel secret and channel token from environment variables
 	channelSecret := os.Getenv("LINE_CHANNEL_SECRET")
