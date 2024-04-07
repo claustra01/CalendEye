@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func (db SqlHandler) Connect() {
+func (db *SqlHandler) Connect() {
 	conn, err := sql.Open("postgres", os.Getenv("POSTGRES_DATABASE_URL"))
 	if err != nil {
 		panic(err)
@@ -17,6 +17,6 @@ func (db SqlHandler) Connect() {
 	db.Conn = conn
 }
 
-func (db SqlHandler) Close() {
+func (db *SqlHandler) Close() {
 	db.Conn.Close()
 }

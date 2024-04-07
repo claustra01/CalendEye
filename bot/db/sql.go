@@ -15,6 +15,9 @@ type SqlHandler struct {
 	Conn *sql.DB
 }
 
-func (db SqlHandler) Query(query string) {
-	db.Conn.Query(query)
+/*
+// Not Implemented
+func (db *SqlHandler) Query(query string) {
+	result, err := db.Conn.Query(query)
 }
+*/
