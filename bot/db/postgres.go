@@ -9,24 +9,26 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func (db *SqlHandler) Connect() {
+func (s *SqlHandler) Connect() error {
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_PORT"), os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_DB"))
 
 	conn, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	db.Conn = conn
+	s.Conn = conn
 
-	err = db.Conn.Ping()
+	err = s.Conn.Ping()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	log.Println("Connected to database!")
+	return nil
 }
 
-func (db *SqlHandler) Close() {
-	db.Conn.Close()
+func (s *SqlHandler) Close() error {
+	err := s.Conn.Close()
+	return err
 }
