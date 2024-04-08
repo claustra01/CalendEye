@@ -21,7 +21,16 @@ func main() {
 	}
 
 	// Connect to database
-	db.DB.Connect()
+	err := db.DB.Connect()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Auto migrate
+	err = db.DB.Migrate()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Get channel secret and channel token from environment variables
 	channelSecret := os.Getenv("LINE_CHANNEL_SECRET")

@@ -2,6 +2,7 @@ version: '3'
 services:
 
   bot:
+    container_name: calendeye-bot
     build:
       context: ./bot
       dockerfile: Dockerfile
@@ -9,8 +10,12 @@ services:
       - ./bot/.env
     ports:
       - 5000:80
+    depends_on:
+      db:
+        condition: service_healthy
 
   web:
+    container_name: calendeye-web
     build:
       context: ./web
       dockerfile: Dockerfile
@@ -20,6 +25,7 @@ services:
       - 5173:80
 
   db:
+    container_name: calendeye-db
     image: postgres:15
     env_file:
       - ./bot/.env
