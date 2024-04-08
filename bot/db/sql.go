@@ -1,6 +1,8 @@
 package db
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 var DB SqlHandler
 
@@ -15,9 +17,10 @@ type SqlHandler struct {
 	Conn *sql.DB
 }
 
-/*
-// Not Implemented
-func (db *SqlHandler) Query(query string) {
+func (db *SqlHandler) Query(query string) (interface{}, error) {
 	result, err := db.Conn.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
-*/
