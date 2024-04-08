@@ -26,6 +26,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Auto migrate
+	err = db.DB.Migrate()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Get channel secret and channel token from environment variables
 	channelSecret := os.Getenv("LINE_CHANNEL_SECRET")
 	channelToken := os.Getenv("LINE_CHANNEL_TOKEN")

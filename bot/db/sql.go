@@ -9,6 +9,7 @@ var DB SqlHandler
 type SqlHandlerInterface interface {
 	Connect() error
 	Close() error
+	Migrate() error
 	Execute(query string, args ...interface{}) (sql.Result, error)
 	QueryRow(query string, args ...interface{}) *sql.Row
 	Query(query string, args ...interface{}) (*sql.Rows, error)
