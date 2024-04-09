@@ -53,6 +53,13 @@ func UnmarshalEvent(data []byte) (EventInterface, error) {
 		}
 		return message, nil
 
+	case "follow":
+		var follow FollowEvent
+		if err := json.Unmarshal(data, &follow); err != nil {
+			return nil, fmt.Errorf("UnmarshalEvent: Cannot read follow: %w", err)
+		}
+		return follow, nil
+
 	default:
 		var unknown UnknownEvent
 		unknown.Type = discriminator

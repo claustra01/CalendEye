@@ -25,6 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.DB.Close()
 
 	// Auto migrate
 	err = db.DB.Migrate()

@@ -28,6 +28,20 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot, ch
 		log.Printf("/callback called%+v...\n", event)
 
 		switch e := event.(type) {
+		case webhook.FollowEvent:
+			if _, err = bot.ReplyMessage(
+				&linebot.ReplyMessageRequest{
+					ReplyToken: e.ReplyToken,
+					Messages: []linebot.MessageInterface{
+						linebot.NewTextMessage("Followed."),
+					},
+				},
+			); err != nil {
+				log.Print(err)
+			} else {
+				log.Println("Sent follow reply.")
+			}
+
 		case webhook.MessageEvent:
 			switch message := e.Message.(type) {
 			case webhook.TextMessageContent:
