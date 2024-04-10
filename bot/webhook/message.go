@@ -35,6 +35,17 @@ type TextMessageContent struct {
 	Text string `json:"text"`
 }
 
+type ImageMessageContent struct {
+	MessageContent
+	ContentProvider ImageContentProvider `json:"contentProvider"`
+}
+
+type ImageContentProvider struct {
+	Type               string `json:"type"`
+	OriginalContentUrl string `json:"originalContentUrl"`
+	PreviewImageUrl    string `json:"previewImageUrl"`
+}
+
 func (cr *MessageEvent) UnmarshalJSON(data []byte) error {
 	var raw map[string]json.RawMessage
 	err := json.Unmarshal(data, &raw)
@@ -127,6 +138,13 @@ func UnmarshalMessageContent(data []byte) (MessageContentInterface, error) {
 			return nil, fmt.Errorf("UnmarshalMessageContent: Cannot read text: %w", err)
 		}
 		return text, nil
+
+	case "image":
+		var image ImageMessageContent
+		if err := json.Unmarshal(data, &image); err != nil {
+			return nil, fmt.Errorf("UnmarshalMessageContent: Cannot read image content: %w", err)
+		}
+		return image, nil
 
 	default:
 		var unknown UnknownMessageContent
