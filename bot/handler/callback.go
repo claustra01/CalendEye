@@ -57,6 +57,21 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot, ch
 				} else {
 					log.Println("Sent text reply.")
 				}
+
+			case webhook.ImageMessageContent:
+				if _, err = bot.ReplyMessage(
+					&linebot.ReplyMessageRequest{
+						ReplyToken: e.ReplyToken,
+						Messages: []linebot.MessageInterface{
+							linebot.NewTextMessage(message.MessageContent.Id),
+						},
+					},
+				); err != nil {
+					log.Print(err)
+				} else {
+					log.Println("Sent image reply.")
+				}
+
 			default:
 				log.Printf("Unsupported message content: %T\n", e.Message)
 			}
