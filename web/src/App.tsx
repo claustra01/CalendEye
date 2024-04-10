@@ -1,42 +1,37 @@
 import liff from '@line/liff';
 import { useEffect, useState } from 'react';
 import './App.css';
+import GoogleLogin from './components/GoogleAuth';
+import InExternalBrowser from './components/InExternalBrowser';
 
 function App() {
-	const [message, setMessage] = useState('');
-	const [error, setError] = useState('');
+	const [auth, setAuth] = useState<boolean>(false);
+	const [userId, setUserId] = useState<string>('');
+	const [displayName, setDisplayName] = useState<string>('');
 
 	useEffect(() => {
 		liff
-			.init({
-				liffId: import.meta.env.VITE_LIFF_ID,
-			})
-			.then(() => {
-				setMessage('LIFF init succeeded.');
+			.init({ liffId: import.meta.env.VITE_LIFF_ID })
+			.then(async () => {
+				const profile = await liff.getProfile();
+				setAuth(true);
+				setUserId(profile.userId);
+				setDisplayName(profile.displayName);
 			})
 			.catch((e: Error) => {
-				setMessage('LIFF init failed.');
-				setError(`${e}`);
+				setAuth(false);
+				alert(e);
 			});
 	});
 
 	return (
-		<div className="App">
-			<h1>create-liff-app</h1>
-			{message && <p>{message}</p>}
-			{error && (
-				<p>
-					<code>{error}</code>
-				</p>
+		<>
+			{auth ? (
+				<GoogleLogin props={{ userId, displayName }} />
+			) : (
+				<InExternalBrowser />
 			)}
-			<a
-				href="https://developers.line.biz/ja/docs/liff/"
-				target="_blank"
-				rel="noreferrer"
-			>
-				LIFF Documentation
-			</a>
-		</div>
+		</>
 	);
 }
 
