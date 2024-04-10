@@ -7,7 +7,7 @@
 		"preview": "vite preview",
 		"fmt": "biome format --write src/**",
 		"lint": "biome lint --apply src/**",
-		"check": "biome check src/**",
+		"check": "biome check --apply src/**",
 		"ci:check": "biome check src/**"
 	},
 	"dependencies": {
