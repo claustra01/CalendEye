@@ -49,7 +49,7 @@ func TestMessageEvent_UnmarshalJSON(t *testing.T) {
 				ReplyToken: "reply_token",
 				Message: ImageMessageContent{
 					MessageContent:  MessageContent{Type: "image", Id: "message_id"},
-					ContentProvider: ImageContentProvider{Type: "line", OriginalContentUrl: "", PreviewImageUrl: ""},
+					ContentProvider: ImageContentProvider{Type: "line"},
 				},
 			},
 			wantErr: false,
