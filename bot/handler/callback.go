@@ -40,7 +40,7 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot, ch
 					&linebot.ReplyMessageRequest{
 						ReplyToken: e.ReplyToken,
 						Messages: []linebot.MessageInterface{
-							linebot.NewTextMessage("エラーが発生しました。もう一度友達登録してください。"),
+							linebot.NewTextMessage("既にユーザーが登録されているか、予期しないエラーが発生しました。"),
 						},
 					},
 				)
