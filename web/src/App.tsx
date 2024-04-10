@@ -1,38 +1,17 @@
-import liff from '@line/liff';
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from './pages/home';
 import './App.css';
-import GoogleLogin from './components/GoogleAuth';
-import InExternalBrowser from './components/InExternalBrowser';
+import OAuth2 from "./pages/oauth2";
 
 function App() {
-	const [auth, setAuth] = useState<boolean>(false);
-	const [userId, setUserId] = useState<string>('');
-	const [displayName, setDisplayName] = useState<string>('');
-
-	useEffect(() => {
-		liff
-			.init({ liffId: import.meta.env.VITE_LIFF_ID })
-			.then(async () => {
-				const profile = await liff.getProfile();
-				setAuth(true);
-				setUserId(profile.userId);
-				setDisplayName(profile.displayName);
-			})
-			.catch((e: Error) => {
-				setAuth(false);
-				alert(e);
-			});
-	});
-
-	return (
-		<>
-			{auth ? (
-				<GoogleLogin props={{ userId, displayName }} />
-			) : (
-				<InExternalBrowser />
-			)}
-		</>
-	);
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+				<Route path="/oauth2" element={<OAuth2 />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
