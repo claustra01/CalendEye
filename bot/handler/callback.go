@@ -45,6 +45,11 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot, ch
 					},
 				)
 			}
+			if err != nil {
+				log.Print(err)
+			} else {
+				log.Println("Sent error reply.")
+			}
 			// Send reply
 			liffUrl := os.Getenv("LIFF_URL")
 			replyText := fmt.Sprintf("友達追加ありがとう!!\nまずはこのリンクからGoogleでログインしてね!!\n%s", liffUrl)
