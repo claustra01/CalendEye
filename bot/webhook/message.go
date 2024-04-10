@@ -42,8 +42,8 @@ type ImageMessageContent struct {
 
 type ImageContentProvider struct {
 	Type               string `json:"type"`
-	OriginalContentUrl string `json:"originalContentUrl"`
-	PreviewImageUrl    string `json:"previewImageUrl"`
+	OriginalContentUrl string `json:"originalContentUrl,omitempty"`
+	PreviewImageUrl    string `json:"previewImageUrl,omitempty"`
 }
 
 func (cr *MessageEvent) UnmarshalJSON(data []byte) error {
