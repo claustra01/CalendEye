@@ -15,6 +15,16 @@ jobs:
       - name: static check
         run: cd bot && make ci-lint
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup
+        uses: actions/setup-go@v5
+      - name: test
+        run: cd bot && make test
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -22,5 +32,5 @@ jobs:
         uses: actions/checkout@v4
       - name: setup
         uses: actions/setup-go@v5
-      - name: static check
+      - name: build
         run: cd bot && make build
