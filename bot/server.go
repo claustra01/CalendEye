@@ -48,6 +48,10 @@ func main() {
 		handler.Callback(w, req, bot, channelSecret)
 	})
 
+	// Setup HTTP Server for get/update user information
+	http.HandleFunc("/user", handler.GetUser)
+	http.HandleFunc("/token", handler.UpdateRefreshToken)
+
 	// This is just sample code.
 	// For actual use, you must support HTTPS by using `ListenAndServeTLS`, a reverse proxy or something else.
 	port := os.Getenv("PORT")
