@@ -21,6 +21,6 @@ const GoogleLogin = ({ props }: { props: Props }) => {
 			</button>
 		</>
 	);
-}
+};
 
 export default GoogleLogin;
