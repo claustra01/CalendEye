@@ -11,7 +11,6 @@ const OAuth2 = () => {
 
 	const checkUserExist = async () => {
 		try {
-			console.log(`${apiUrl}/users?id=${lineId}`);
 			const response = await fetch(`${apiUrl}/user?id=${lineId}`);
 			const data = await response.json();
 			if (!response.ok) {
