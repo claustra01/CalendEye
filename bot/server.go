@@ -11,6 +11,16 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// CORS middleware
+func CORSHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, PATCH")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	// Load environment variables from .env file
 	if os.Getenv("GOENV") != "production" {
@@ -59,7 +69,8 @@ func main() {
 		port = "5000"
 	}
 	log.Println("Server started!")
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	err = http.ListenAndServe(":"+port, CORSHandler(http.DefaultServeMux))
+	if err != nil {
 		log.Fatal(err)
 	}
 }
