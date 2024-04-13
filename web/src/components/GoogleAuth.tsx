@@ -5,7 +5,7 @@ type Props = {
 	displayName: string;
 };
 
-function GoogleLogin({ props }: { props: Props }) {
+const GoogleLogin = ({ props }: { props: Props }) => {
 	const redirectToWeb = () => {
 		liff.openWindow({
 			url: `/oauth2?id=${props.userId}`,
