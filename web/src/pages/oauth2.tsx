@@ -9,7 +9,7 @@ const OAuth2 = () => {
 	const query = new URLSearchParams(location.search);
 	const lineId = query.get('id');
 
-	const fetchData = async () => {
+	const checkUserExist = async () => {
 		try {
 			console.log(`${apiUrl}/users?id=${lineId}`);
 			const response = await fetch(`${apiUrl}/user?id=${lineId}`);
@@ -24,9 +24,12 @@ const OAuth2 = () => {
 		}
 	};
 
+	const authGoogle = async () => {};
+
 	useEffect(() => {
-		fetchData();
-	}, [fetchData]);
+		checkUserExist();
+		authGoogle();
+	}, [checkUserExist]);
 
 	return <></>;
 };
