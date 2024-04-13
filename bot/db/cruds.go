@@ -1,6 +1,12 @@
 package db
 
-import "time"
+import (
+	"database/sql"
+	"errors"
+	"time"
+)
+
+var ErrNoRecord = errors.New("record not found")
 
 func GetUser(id string) (*User, error) {
 	query := `
@@ -10,7 +16,9 @@ func GetUser(id string) (*User, error) {
 
 	user := &User{}
 	err := row.Scan(&user.Id, &user.RefreshToken, &user.CreatedAt, &user.UpdatedAt)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return nil, ErrNoRecord
+	} else if err != nil {
 		return nil, err
 	}
 
@@ -32,5 +40,9 @@ func UpdateRefreshToken(id string, refreshToken string) error {
 		WHERE id = $1;
 	`
 	_, err := DB.Execute(query, id, refreshToken, time.Now())
+	if err == sql.ErrNoRows {
+		return ErrNoRecord
+	}
+
 	return err
 }
