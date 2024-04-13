@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/claustra01/calendeye/db"
@@ -16,10 +17,22 @@ func UpdateRefreshToken(w http.ResponseWriter, req *http.Request) {
 	defer func() { _ = req.Body.Close() }()
 
 	id := req.URL.Query().Get("id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		_, err := w.Write([]byte("id is required"))
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		_, err := w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
@@ -27,21 +40,33 @@ func UpdateRefreshToken(w http.ResponseWriter, req *http.Request) {
 	err = json.Unmarshal(body, &token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		_, err := w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
 	err = db.UpdateRefreshToken(id, token.RefreshToken)
 	if err == db.ErrNoRecord {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(err.Error()))
+		_, err := w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err)
+		}
 		return
 	} else if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		_, err := w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Refresh token updated"))
+	_, err = w.Write([]byte("Refresh token updated"))
+	if err != nil {
+		log.Println(err)
+	}
 }
