@@ -9,7 +9,10 @@ function App() {
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/oauth2" element={<OAuth2 />} />
-				<Route path="/nouser" element={<div>LINE友達登録後、再度お試しください。</div>} />
+				<Route
+					path="/nouser"
+					element={<div>LINE友達登録後、再度お試しください。</div>}
+				/>
 			</Routes>
 		</BrowserRouter>
 	);
