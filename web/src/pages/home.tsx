@@ -17,9 +17,9 @@ const Home = () => {
 				setUserId(profile.userId);
 				setDisplayName(profile.displayName);
 			})
-			.catch((e: Error) => {
+			.catch((error) => {
 				setAuth(false);
-				alert(e);
+				console.error('Failed to initialize LIFF: ', error);
 			});
 	});
 
