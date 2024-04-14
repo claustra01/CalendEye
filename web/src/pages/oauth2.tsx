@@ -64,8 +64,9 @@ const OAuth2 = () => {
 	};
 
 	useEffect(() => {
-		checkUserExist();
-		authGoogle();
+		checkUserExist().then(() => {
+			authGoogle();
+		});
 	}, [checkUserExist, authGoogle]);
 
 	return <></>;
