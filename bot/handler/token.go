@@ -53,7 +53,7 @@ func UpdateRefreshToken(w http.ResponseWriter, req *http.Request) {
 	}
 	if token == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		_, err := w.Write([]byte("Failed to get token"))
+		_, err := w.Write([]byte("Failed to get refresh token"))
 		if err != nil {
 			log.Println(err)
 		}
