@@ -28,13 +28,13 @@ const Callback = () => {
 			});
 			if (!response.ok) {
 				console.error('Failed to fetch token: ', response);
-				// navigate('/nouser');
+				navigate('/nouser');
 			} else {
-				navigate('/result');
+				navigate('/success');
 			}
 		} catch (error) {
 			console.error('Failed to fetch token: ', error);
-			// navigate('/nouser');
+			navigate('/nouser');
 		}
 	};
 
