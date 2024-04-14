@@ -9,6 +9,10 @@ import (
 var ErrNoRecord = errors.New("record not found")
 
 func GetUser(id string) (*User, error) {
+	if id == "" {
+		return nil, errors.New("id must not be empty")
+	}
+
 	query := `
 		SELECT * FROM users WHERE id = $1;
 	`
@@ -26,6 +30,10 @@ func GetUser(id string) (*User, error) {
 }
 
 func RegisterUser(id string) error {
+	if id == "" {
+		return errors.New("id must not be empty")
+	}
+
 	query := `
 		INSERT INTO users (id, created_at, updated_at)
 		VALUES ($1, $2, $3);
@@ -35,6 +43,10 @@ func RegisterUser(id string) error {
 }
 
 func UpdateRefreshToken(id string, refreshToken string) error {
+	if id == "" || refreshToken == "" {
+		return errors.New("id and refresh token must not be empty")
+	}
+
 	query := `
 		UPDATE users SET refresh_token = $2, updated_at = $3
 		WHERE id = $1;
