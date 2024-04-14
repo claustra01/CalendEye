@@ -2,9 +2,12 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/claustra01/calendeye/db"
 	"github.com/claustra01/calendeye/linebot"
 	"github.com/claustra01/calendeye/webhook"
 )
@@ -29,14 +32,36 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot, ch
 
 		switch e := event.(type) {
 		case webhook.FollowEvent:
-			if _, err = bot.ReplyMessage(
+			// Register user
+			err := db.RegisterUser(e.Source.(webhook.UserSource).UserId)
+			if err != nil {
+				log.Printf("Cannot register user: %+v\n", err)
+				_, err = bot.ReplyMessage(
+					&linebot.ReplyMessageRequest{
+						ReplyToken: e.ReplyToken,
+						Messages: []linebot.MessageInterface{
+							linebot.NewTextMessage("既にユーザーが登録されているか、予期しないエラーが発生しました。"),
+						},
+					},
+				)
+			}
+			if err != nil {
+				log.Print(err)
+			} else {
+				log.Println("Sent error reply.")
+			}
+			// Send reply
+			liffUrl := os.Getenv("LIFF_URL")
+			replyText := fmt.Sprintf("友達追加ありがとう!!\nまずはこのリンクからGoogleでログインしてね!!\n%s", liffUrl)
+			_, err = bot.ReplyMessage(
 				&linebot.ReplyMessageRequest{
 					ReplyToken: e.ReplyToken,
 					Messages: []linebot.MessageInterface{
-						linebot.NewTextMessage("Followed."),
+						linebot.NewTextMessage(replyText),
 					},
 				},
-			); err != nil {
+			)
+			if err != nil {
 				log.Print(err)
 			} else {
 				log.Println("Sent follow reply.")

@@ -6,9 +6,8 @@ import (
 )
 
 type User struct {
-	Id           string
-	HashId       string
-	RefreshToken sql.NullString
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	Id           string         `json:"id"`
+	RefreshToken sql.NullString `json:"refresh_token"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
 }

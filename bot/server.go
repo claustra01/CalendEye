@@ -11,6 +11,22 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// CORS middleware
+func CORSHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if r.Method == "OPTIONS" {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	// Load environment variables from .env file
 	if os.Getenv("GOENV") != "production" {
@@ -48,6 +64,10 @@ func main() {
 		handler.Callback(w, req, bot, channelSecret)
 	})
 
+	// Setup HTTP Server for get/update user information
+	http.HandleFunc("/user", handler.GetUser)
+	http.HandleFunc("/token", handler.UpdateRefreshToken)
+
 	// This is just sample code.
 	// For actual use, you must support HTTPS by using `ListenAndServeTLS`, a reverse proxy or something else.
 	port := os.Getenv("PORT")
@@ -55,7 +75,8 @@ func main() {
 		port = "5000"
 	}
 	log.Println("Server started!")
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	err = http.ListenAndServe(":"+port, CORSHandler(http.DefaultServeMux))
+	if err != nil {
 		log.Fatal(err)
 	}
 }

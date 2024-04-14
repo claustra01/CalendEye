@@ -5,8 +5,7 @@ import "log"
 func (s *SqlHandler) Migrate() error {
 	query := `
 		CREATE TABLE IF NOT EXISTS users (
-			id SERIAL PRIMARY KEY,
-			hash_id TEXT NOT NULL,
+			id TEXT PRIMARY KEY,
 			refresh_token TEXT,
 			created_at TIMESTAMP NOT NULL,
 			updated_at TIMESTAMP NOT NULL

@@ -1,42 +1,24 @@
-import liff from '@line/liff';
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
+import Callback from './pages/callback';
+import Home from './pages/home';
+import OAuth2 from './pages/oauth2';
+import Success from './pages/success';
 
 function App() {
-	const [message, setMessage] = useState('');
-	const [error, setError] = useState('');
-
-	useEffect(() => {
-		liff
-			.init({
-				liffId: import.meta.env.VITE_LIFF_ID,
-			})
-			.then(() => {
-				setMessage('LIFF init succeeded.');
-			})
-			.catch((e: Error) => {
-				setMessage('LIFF init failed.');
-				setError(`${e}`);
-			});
-	});
-
 	return (
-		<div className="App">
-			<h1>create-liff-app</h1>
-			{message && <p>{message}</p>}
-			{error && (
-				<p>
-					<code>{error}</code>
-				</p>
-			)}
-			<a
-				href="https://developers.line.biz/ja/docs/liff/"
-				target="_blank"
-				rel="noreferrer"
-			>
-				LIFF Documentation
-			</a>
-		</div>
+		<BrowserRouter>
+			<Routes>
+				<Route path="/" element={<Home />} />
+				<Route path="/oauth2" element={<OAuth2 />} />
+				<Route path="/callback" element={<Callback />} />
+				<Route path="/success" element={<Success />} />
+				<Route
+					path="/nouser"
+					element={<div>エラーが発生しました。再度お試しください。</div>}
+				/>
+			</Routes>
+		</BrowserRouter>
 	);
 }
 
