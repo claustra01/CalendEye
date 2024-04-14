@@ -5,7 +5,7 @@ const Success = () => {
 		window.location.href = 'line://';
 	}, []);
 
-	return <div>ログインに成功しました。</div>;
+	return <div>ログインに成功しました。LINEアプリに戻ります。</div>;
 };
 
 export default Success;

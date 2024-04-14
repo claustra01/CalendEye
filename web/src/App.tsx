@@ -15,7 +15,7 @@ function App() {
 				<Route path="/success" element={<Success />} />
 				<Route
 					path="/nouser"
-					element={<div>LINE友達登録後、再度お試しください。</div>}
+					element={<div>エラーが発生しました。再度お試しください。</div>}
 				/>
 			</Routes>
 		</BrowserRouter>
