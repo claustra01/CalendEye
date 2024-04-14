@@ -23,7 +23,7 @@ type TokenResponseBody struct {
 	TokenType    string `json:"token_type"`
 }
 
-func (c *OAuthClient) GetToken(code string) (string, error) {
+func (c *OAuthClient) GetRefreshToken(code string) (string, error) {
 
 	reqBody := TokenRequestBody{
 		ClientId:     c.Config.ClientId,

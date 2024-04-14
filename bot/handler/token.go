@@ -42,7 +42,7 @@ func UpdateRefreshToken(w http.ResponseWriter, req *http.Request) {
 	client := google.NewOAuthClient(
 		req.Context(),
 	)
-	token, err := client.GetToken(reqBody.AuthCode)
+	token, err := client.GetRefreshToken(reqBody.AuthCode)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		_, err := w.Write([]byte(err.Error()))
