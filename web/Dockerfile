@@ -14,6 +14,8 @@ RUN npm run build
 FROM nginx:latest
 ENV TZ=Asia/Tokyo
 
+ADD nginx/default.conf /etc/nginx/conf.d
+
 WORKDIR /etc/nginx/html
 
 RUN rm -rf /usr/share/nginx/html/*
