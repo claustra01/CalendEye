@@ -7,24 +7,16 @@ import (
 	"net/http"
 
 	"github.com/claustra01/calendeye/db"
+	"github.com/claustra01/calendeye/google"
 )
 
-type TokenResponseBody struct {
-	RefreshToken string `json:"refresh_token"`
+type TokenRequestBody struct {
+	Id       string `json:"id"`
+	AuthCode string `json:"code"`
 }
 
 func UpdateRefreshToken(w http.ResponseWriter, req *http.Request) {
 	defer func() { _ = req.Body.Close() }()
-
-	id := req.URL.Query().Get("id")
-	if id == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		_, err := w.Write([]byte("id is required"))
-		if err != nil {
-			log.Println(err)
-		}
-		return
-	}
 
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
@@ -36,8 +28,8 @@ func UpdateRefreshToken(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	var token TokenResponseBody
-	err = json.Unmarshal(body, &token)
+	var reqBody TokenRequestBody
+	err = json.Unmarshal(body, &reqBody)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		_, err := w.Write([]byte(err.Error()))
@@ -47,7 +39,28 @@ func UpdateRefreshToken(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = db.UpdateRefreshToken(id, token.RefreshToken)
+	client := google.NewOAuthClient(
+		req.Context(),
+	)
+	token, err := client.GetToken(reqBody.AuthCode)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err := w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+	if token == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		_, err := w.Write([]byte("Failed to get token"))
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
+	err = db.UpdateRefreshToken(reqBody.Id, token)
 	if err == db.ErrNoRecord {
 		w.WriteHeader(http.StatusNotFound)
 		_, err := w.Write([]byte(err.Error()))
