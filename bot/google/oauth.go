@@ -18,20 +18,22 @@ type OAuthClient struct {
 }
 
 type Config struct {
-	ClientId     string
-	ClientSecret string
-	Scopes       []string
-	Endpoint     string
-	RedirectUri  string
+	ClientId         string
+	ClientSecret     string
+	Scopes           []string
+	Endpoint         string
+	CalenderEndpoint string
+	RedirectUri      string
 }
 
 func NewOAuthClient(ctx context.Context) *OAuthClient {
 	config := &Config{
-		ClientId:     os.Getenv("GOOGLE_CLIENT_ID"),
-		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-		Scopes:       []string{"https://www.googleapis.com/auth/calendar"},
-		Endpoint:     "https://accounts.google.com/o/oauth2",
-		RedirectUri:  os.Getenv("GOOGLE_REDIRECT"),
+		ClientId:         os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret:     os.Getenv("GOOGLE_CLIENT_SECRET"),
+		Scopes:           []string{"https://www.googleapis.com/auth/calendar"},
+		Endpoint:         "https://oauth2.googleapis.com/token",
+		CalenderEndpoint: "https://www.googleapis.com/calendar/v3",
+		RedirectUri:      os.Getenv("GOOGLE_REDIRECT"),
 	}
 
 	return &OAuthClient{
