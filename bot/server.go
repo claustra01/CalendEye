@@ -49,19 +49,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Get channel secret and channel token from environment variables
-	channelSecret := os.Getenv("LINE_CHANNEL_SECRET")
-	channelToken := os.Getenv("LINE_CHANNEL_TOKEN")
-
 	// Initialize LINE bot
-	bot, err := linebot.NewBot(channelToken)
+	bot, err := linebot.NewBot()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Setup HTTP Server for receiving requests from LINE platform
 	http.HandleFunc("/callback", func(w http.ResponseWriter, req *http.Request) {
-		handler.Callback(w, req, bot, channelSecret)
+		handler.Callback(w, req, bot)
 	})
 
 	// Setup HTTP Server for get/update user information

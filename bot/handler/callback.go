@@ -1,21 +1,29 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"image"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/claustra01/calendeye/db"
+	"github.com/claustra01/calendeye/google"
 	"github.com/claustra01/calendeye/linebot"
+	"github.com/claustra01/calendeye/openai"
 	"github.com/claustra01/calendeye/webhook"
 )
 
-func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot, channelSecret string) {
+var (
+	liffUrl = os.Getenv("LIFF_URL")
+)
+
+func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot) {
 	log.Println("/callback called...")
 
-	cb, err := webhook.ParseRequest(channelSecret, req)
+	cb, err := webhook.ParseRequest(bot.GetChannelSecret(), req)
 	if err != nil {
 		log.Printf("Cannot parse request: %+v\n", err)
 		if errors.Is(err, webhook.ErrInvalidSignature) {
@@ -51,7 +59,6 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot, ch
 				log.Println("Sent error reply.")
 			}
 			// Send reply
-			liffUrl := os.Getenv("LIFF_URL")
 			replyText := fmt.Sprintf("友達追加ありがとう!!\nまずはこのリンクからGoogleでログインしてね!!\n%s", liffUrl)
 			_, err = bot.ReplyMessage(
 				&linebot.ReplyMessageRequest{
@@ -84,11 +91,163 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot, ch
 				}
 
 			case webhook.ImageMessageContent:
+				var img image.Image
+				var format string
+
+				switch message.ContentProvider.Type {
+				case "line":
+					img, format, err = bot.FetchLineImage(context.Background(), message.MessageContent.Id)
+					if err != nil {
+						log.Printf("Failed to fetch image: %+v\n", err)
+						_, err = bot.ReplyMessage(
+							&linebot.ReplyMessageRequest{
+								ReplyToken: e.ReplyToken,
+								Messages: []linebot.MessageInterface{
+									linebot.NewTextMessage("画像の取得に失敗しました。"),
+								},
+							},
+						)
+						if err != nil {
+							log.Print(err)
+						}
+					}
+				case "external":
+					img, format, err = bot.FetchExternalImage(context.Background(), message.ContentProvider.OriginalContentUrl)
+					if err != nil {
+						log.Printf("Failed to fetch image: %+v\n", err)
+						_, err = bot.ReplyMessage(
+							&linebot.ReplyMessageRequest{
+								ReplyToken: e.ReplyToken,
+								Messages: []linebot.MessageInterface{
+									linebot.NewTextMessage("画像の取得に失敗しました。"),
+								},
+							},
+						)
+						if err != nil {
+							log.Print(err)
+						}
+					}
+				default:
+					log.Printf("Unknown contentProvider type: %+v\n", message.ContentProvider.Type)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("不明な画像です。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				refreshToken, err := db.GetRefreshToken(e.Source.(webhook.UserSource).UserId)
+				if err != nil {
+					log.Printf("Failed to get refresh token: %+v\n", err)
+					replyText := fmt.Sprintf("まずはこのリンクからGoogleでログインしてね!!\n%s", liffUrl)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage(replyText),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				googleClient := google.NewOAuthClient(context.Background())
+				accessToken, err := googleClient.GetAccessToken(refreshToken)
+				if err != nil {
+					log.Printf("Failed to get access token: %+v\n", err)
+					replyText := fmt.Sprintf("まずはこのリンクからGoogleでログインしてね!!\n%s", liffUrl)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage(replyText),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				gpt, err := openai.NewGpt4Vision(context.Background())
+				if err != nil {
+					log.Printf("Failed to create GPT-4 client: %+v\n", err)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("OpenAIのエラーです。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				eventJson, err := gpt.Img2Txt(img, format)
+				if err != nil {
+					log.Printf("Failed to convert image to text: %+v\n", err)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("画像の解析に失敗しました。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				content, err := google.ParseCalendarContent(eventJson)
+				if err != nil {
+					log.Printf("Failed to parse calendar content: %+v\n", err)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("イベントが見つかりませんでした。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				err = googleClient.RegisterCalenderEvent(content, accessToken)
+				if err != nil {
+					log.Printf("Failed to register event: %+v\n", err)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("イベントの登録に失敗しました。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
 				if _, err = bot.ReplyMessage(
 					&linebot.ReplyMessageRequest{
 						ReplyToken: e.ReplyToken,
 						Messages: []linebot.MessageInterface{
-							linebot.NewTextMessage(message.MessageContent.Id),
+							linebot.NewTextMessage(
+								fmt.Sprintf("カレンダーに「%s」の予定を登録したよ!!\n場所: %s\n開始: %s", content.Summary, content.Location, content.Start.Format("2006-01-02 15:04")),
+							),
 						},
 					},
 				); err != nil {
