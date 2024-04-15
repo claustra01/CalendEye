@@ -30,6 +30,7 @@ type CalenderEvent struct {
 	Location string        `json:"location"`
 	Start    EventDateTime `json:"start"`
 	End      EventDateTime `json:"end"`
+	ColorId  string        `json:"colorId"`
 }
 
 type EventDateTime struct {
@@ -51,6 +52,19 @@ func ParseCalendarContent(jsonStr string) (CalendarContent, error) {
 	return c, nil
 }
 
+func EventTypeToColorId(eventType string) string {
+	switch eventType {
+	case "event":
+		return "7"
+	case "work":
+		return "5"
+	case "reminder":
+		return "11"
+	default:
+		return "8"
+	}
+}
+
 func (c *OAuthClient) RegisterCalenderEvent(content CalendarContent, accessToken string) error {
 	event := CalenderEvent{
 		Summary:  content.Summary,
@@ -63,6 +77,7 @@ func (c *OAuthClient) RegisterCalenderEvent(content CalendarContent, accessToken
 			DateTime: content.End,
 			TimeZone: content.End.Location().String(),
 		},
+		ColorId: EventTypeToColorId(content.Type),
 	}
 
 	eventJson, err := json.Marshal(event)
