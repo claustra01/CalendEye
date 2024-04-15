@@ -3,13 +3,13 @@ package openai
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"image"
 	"image/jpeg"
 	"image/png"
 	"io"
 	"net/http"
-	"strings"
 )
 
 func EncodeImage(img image.Image, format string) (string, error) {
@@ -43,29 +43,36 @@ func (c *Gpt4Vision) Img2Txt(img image.Image, format string) (string, error) {
 		return "", err
 	}
 
-	body := fmt.Sprintf(`{
-		"model": "gpt-4-turbo",
-		"messages": [
-		  {
-			"role": "user",
-			"content": [
-			  {
-				"type": "text",
-				"text": "What's in this image?"
-			  },
-			  {
-				"type": "image_url",
-				"image_url": {
-				  "url": "data:image/%s;base64,%s"
-				}
-			  }
-			]
-		  }
-		],
-		"max_tokens": 300
-	}`, format, base64Image)
+	prompt := "日本語でこの画像を完結に説明してください。"
 
-	req, err := http.NewRequest(http.MethodPost, c.endpoint.String(), strings.NewReader(body))
+	reqBody := OpenAIRequest{
+		Model: c.model,
+		Messages: []RequestMessage{
+			{
+				Role: "user",
+				Content: []RequestMessageContent{
+					{
+						Type: "text",
+						Text: prompt,
+					},
+					{
+						Type: "image_url",
+						Image: RequestMessageImage{
+							Url: fmt.Sprintf("data:image/%s;base64,%s", format, base64Image),
+						},
+					},
+				},
+			},
+		},
+		MaxTokens: 300,
+	}
+
+	reqJson, err := json.Marshal(reqBody)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, c.endpoint.String(), bytes.NewBuffer(reqJson))
 	if err != nil {
 		return "", err
 	}
@@ -83,5 +90,14 @@ func (c *Gpt4Vision) Img2Txt(img image.Image, format string) (string, error) {
 		return "", err
 	}
 
-	return string(respBody), nil
+	var respData OpenAIResponse
+	err = json.Unmarshal(respBody, &respData)
+	if err != nil {
+		return "", err
+	}
+	if len(respData.Choices) != 1 {
+		return "", fmt.Errorf("Invalid choices in response")
+	}
+
+	return respData.Choices[0].Message.Content, nil
 }
