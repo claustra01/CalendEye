@@ -10,6 +10,7 @@ import (
 	"image/png"
 	"io"
 	"net/http"
+	"time"
 )
 
 func EncodeImage(img image.Image, format string) (string, error) {
@@ -43,7 +44,7 @@ func (c *Gpt4Vision) Img2Txt(img image.Image, format string) (string, error) {
 		return "", err
 	}
 
-	prompt := `
+	prompt := fmt.Sprintf(`
 		この後に送る画像は、カレンダーに登録するようなイベントや予定の内容が含まれるような、写真もしくはスクリーンショットです。
 		その画像の内容をGoogleカレンダーへ登録するため、以下のような構造体を用意しました。この構造体に展開できるようなJSON文字列を返してください。
 		ただし、時間については特に明示されない限り日本時間（UTC+9）とします。
@@ -51,6 +52,7 @@ func (c *Gpt4Vision) Img2Txt(img image.Image, format string) (string, error) {
 		画像がイベントや予定の内容ではない無関係な画像だと判断した場合のみ、unknownを使用してください。
 		なお、JSON以外の文字列、すなわち画像自体の説明テキストなどの情報は不要です。必ずJSON文字列のみを返してください。
 		改行やコードブロック等に関連する各種記号も不要です。**絶対に**一行のJSON文字列のみを返してください。
+		ちなみに、今日は%s年%s月%s日です。
 		'''go
 		type CalendarContent struct {
 			Type     string    'json:"type"'
@@ -60,7 +62,7 @@ func (c *Gpt4Vision) Img2Txt(img image.Image, format string) (string, error) {
 			End      time.Time 'json:"end"'
 		}
 		'''
-	`
+	`, time.Now().Format("2006"), time.Now().Format("01"), time.Now().Format("02"))
 
 	reqBody := OpenAIRequest{
 		Model: c.model,
