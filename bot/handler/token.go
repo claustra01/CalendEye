@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"log"
@@ -39,9 +40,7 @@ func UpdateRefreshToken(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	client := google.NewOAuthClient(
-		req.Context(),
-	)
+	client := google.NewOAuthClient(context.Background())
 	token, err := client.GetRefreshToken(reqBody.AuthCode)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
