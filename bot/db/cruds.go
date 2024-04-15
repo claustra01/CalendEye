@@ -58,3 +58,24 @@ func UpdateRefreshToken(id string, refreshToken string) error {
 
 	return err
 }
+
+func GetRefreshToken(id string) (string, error) {
+	if id == "" {
+		return "", errors.New("id must not be empty")
+	}
+
+	query := `
+		SELECT refresh_token FROM users WHERE id = $1;
+	`
+	row := DB.QueryRow(query, id)
+
+	var refreshToken string
+	err := row.Scan(&refreshToken)
+	if err == sql.ErrNoRows {
+		return "", ErrNoRecord
+	} else if err != nil {
+		return "", err
+	}
+
+	return refreshToken, nil
+}
