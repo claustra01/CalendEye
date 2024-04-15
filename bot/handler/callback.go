@@ -245,7 +245,9 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot) {
 					&linebot.ReplyMessageRequest{
 						ReplyToken: e.ReplyToken,
 						Messages: []linebot.MessageInterface{
-							linebot.NewTextMessage(fmt.Sprintf("「%s」の予定を登録したよ!!", content.Summary)),
+							linebot.NewTextMessage(
+								fmt.Sprintf("カレンダーに「%s」の予定を登録したよ!!\n場所: %s\n開始: %s", content.Summary, content.Location, content.Start.Format("2006-01-02 15:04")),
+							),
 						},
 					},
 				); err != nil {
