@@ -1,14 +1,17 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"image"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/claustra01/calendeye/db"
 	"github.com/claustra01/calendeye/linebot"
+	"github.com/claustra01/calendeye/openai"
 	"github.com/claustra01/calendeye/webhook"
 )
 
@@ -84,11 +87,95 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot, ch
 				}
 
 			case webhook.ImageMessageContent:
+				ctx := context.Background()
+				var img image.Image
+				var format string
+
+				switch message.ContentProvider.Type {
+				case "line":
+					img, format, err = bot.FetchLineImage(ctx, message.MessageContent.Id)
+					if err != nil {
+						log.Printf("Failed to fetch image: %+v\n", err)
+						_, err = bot.ReplyMessage(
+							&linebot.ReplyMessageRequest{
+								ReplyToken: e.ReplyToken,
+								Messages: []linebot.MessageInterface{
+									linebot.NewTextMessage("画像の取得に失敗しました。"),
+								},
+							},
+						)
+						if err != nil {
+							log.Print(err)
+						}
+					}
+				case "external":
+					img, format, err = bot.FetchExternalImage(ctx, message.ContentProvider.OriginalContentUrl)
+					if err != nil {
+						log.Printf("Failed to fetch image: %+v\n", err)
+						_, err = bot.ReplyMessage(
+							&linebot.ReplyMessageRequest{
+								ReplyToken: e.ReplyToken,
+								Messages: []linebot.MessageInterface{
+									linebot.NewTextMessage("画像の取得に失敗しました。"),
+								},
+							},
+						)
+						if err != nil {
+							log.Print(err)
+						}
+					}
+				default:
+					log.Printf("Unknown contentProvider type: %+v\n", message.ContentProvider.Type)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("不明な画像です。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				gpt, err := openai.NewGpt4Vision(ctx)
+				if err != nil {
+					log.Printf("Failed to create GPT-4 client: %+v\n", err)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("OpenAIのエラーです。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				replyText, err := gpt.Img2Txt(img, format)
+				if err != nil {
+					log.Printf("Failed to convert image to text: %+v\n", err)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("画像の解析に失敗しました。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
 				if _, err = bot.ReplyMessage(
 					&linebot.ReplyMessageRequest{
 						ReplyToken: e.ReplyToken,
 						Messages: []linebot.MessageInterface{
-							linebot.NewTextMessage(message.MessageContent.Id),
+							linebot.NewTextMessage(replyText),
 						},
 					},
 				); err != nil {
