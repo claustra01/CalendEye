@@ -24,8 +24,7 @@ func (c *LineBot) FetchLineImage(ctx context.Context, id string) (image.Image, s
 	}
 	defer resp.Body.Close()
 
-	img, format, err := image.Decode(resp.Body)
-	return img, format, nil
+	return image.Decode(resp.Body)
 }
 
 func (c *LineBot) FetchExternalImage(ctx context.Context, url string) (image.Image, string, error) {
@@ -44,6 +43,5 @@ func (c *LineBot) FetchExternalImage(ctx context.Context, url string) (image.Ima
 	}
 	defer resp.Body.Close()
 
-	img, format, err := image.Decode(resp.Body)
-	return img, format, nil
+	return image.Decode(resp.Body)
 }
