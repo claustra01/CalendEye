@@ -43,7 +43,23 @@ func (c *Gpt4Vision) Img2Txt(img image.Image, format string) (string, error) {
 		return "", err
 	}
 
-	prompt := "日本語でこの画像を完結に説明してください。"
+	prompt := `
+		この後に送る画像は、カレンダーに登録するようなイベントや予定の内容が含まれるような、写真もしくはスクリーンショットです。
+		その画像の内容をGoogleカレンダーへ登録するため、以下のような構造体を用意しました。この構造体に展開できるようなJSON文字列を返してください。
+		ただし、時間については特に明示されない限り日本時間（UTC+9）とします。
+		また、Typeについては、「event」「work」「limit」「unknown」のいずれかとし、eventは遊びなどを示すもの、workは仕事や学業に関するもの、limitは何らかの期限を表すものとします。
+		画像がイベントや予定の内容ではない無関係な画像だと判断した場合のみ、unknownを使用してください。
+		なお、JSON以外の文字列、すなわち画像自体の説明テキストなどの情報は不要です。必ずJSON文字列のみを返して下さい。コードブロック等も不要です。
+		'''go
+		type CalendarContent struct {
+			Type     string    'json:"type"'
+			Title    string    'json:"title"'
+			Location string    'json:"location"'
+			Start    time.Time 'json:"start"'
+			End      time.Time 'json:"end"'
+		}
+		'''
+	`
 
 	reqBody := OpenAIRequest{
 		Model: c.model,
