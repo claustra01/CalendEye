@@ -49,11 +49,12 @@ func (c *Gpt4Vision) Img2Txt(img image.Image, format string) (string, error) {
 		ただし、時間については特に明示されない限り日本時間（UTC+9）とします。
 		また、Typeについては、「event」「work」「limit」「unknown」のいずれかとし、eventは遊びなどを示すもの、workは仕事や学業に関するもの、limitは何らかの期限を表すものとします。
 		画像がイベントや予定の内容ではない無関係な画像だと判断した場合のみ、unknownを使用してください。
-		なお、JSON以外の文字列、すなわち画像自体の説明テキストなどの情報は不要です。必ずJSON文字列のみを返して下さい。コードブロック等も不要です。
+		なお、JSON以外の文字列、すなわち画像自体の説明テキストなどの情報は不要です。必ずJSON文字列のみを返してください。
+		改行やコードブロック等に関連する各種記号も不要です。**絶対に**一行のJSON文字列のみを返してください。
 		'''go
 		type CalendarContent struct {
 			Type     string    'json:"type"'
-			Title    string    'json:"title"'
+			Summary  string    'json:"summary"'
 			Location string    'json:"location"'
 			Start    time.Time 'json:"start"'
 			End      time.Time 'json:"end"'
