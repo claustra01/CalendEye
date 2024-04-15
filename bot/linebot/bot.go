@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 )
 
@@ -13,20 +14,18 @@ var (
 )
 
 type LineBot struct {
-	httpClient   *http.Client
-	endpoint     *url.URL
-	channelToken string
-	ctx          context.Context
+	httpClient    *http.Client
+	endpoint      *url.URL
+	channelToken  string
+	channelSecret string
+	ctx           context.Context
 }
 
-func NewBot(channelToken string) (*LineBot, error) {
-	if channelToken == "" {
-		return nil, ErrNoChannelToken
-	}
-
+func NewBot() (*LineBot, error) {
 	c := &LineBot{
-		httpClient:   http.DefaultClient,
-		channelToken: channelToken,
+		httpClient:    http.DefaultClient,
+		channelToken:  os.Getenv("LINE_CHANNEL_TOKEN"),
+		channelSecret: os.Getenv("LINE_CHANNEL_SECRET"),
 	}
 
 	u, err := url.ParseRequestURI("https://api.line.me")
@@ -58,4 +57,8 @@ func (client *LineBot) Do(req *http.Request) (*http.Response, error) {
 		req = req.WithContext(client.ctx)
 	}
 	return client.httpClient.Do(req)
+}
+
+func (client *LineBot) GetChannelSecret() string {
+	return client.channelSecret
 }

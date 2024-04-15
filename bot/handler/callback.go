@@ -20,10 +20,10 @@ var (
 	liffUrl = os.Getenv("LIFF_URL")
 )
 
-func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot, channelSecret string) {
+func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot) {
 	log.Println("/callback called...")
 
-	cb, err := webhook.ParseRequest(channelSecret, req)
+	cb, err := webhook.ParseRequest(bot.GetChannelSecret(), req)
 	if err != nil {
 		log.Printf("Cannot parse request: %+v\n", err)
 		if errors.Is(err, webhook.ErrInvalidSignature) {
