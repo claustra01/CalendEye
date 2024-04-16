@@ -5,4 +5,4 @@
 ## 技術的なお話
 - GitHubのRepositoryを整えたり、CI(lint/test)を組んだりしました。issueやPRのフォーマットも整備しています。
 - また、Botの機能は認証や画像の操作、LineBotなど全ての機能をCoの標準パッケージだけで実装しています。(godotenvとlib/pqのみ使用しています)
-- interfaceを用いてDIをちゃんとした構成にしようとしています。(現在作業中)
+- interfaceを用いてDIがちゃんとした構成を目指しています。(現在作業中)
