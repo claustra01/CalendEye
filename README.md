@@ -1,6 +1,6 @@
 # CalendEye
 ### 画像を送るとその内容をGoogleカレンダーに登録してくれるLINEBotです。
-![image](https://github.com/claustra01/CalendEye/assets/108509532/a90cba43-c66f-4eff-ad68-108a97591fc5)
+<img src="https://github.com/claustra01/CalendEye/assets/108509532/a90cba43-c66f-4eff-ad68-108a97591fc5" width="300px">
 
 ## 技術的なお話
 - Botの機能については、認証や画像の操作、LineBotなど全ての機能をGoの標準パッケージだけで実装しています。(今はgodotenvとlib/pqのみ使用しています)
