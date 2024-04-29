@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+var (
+	ErrCalenderExpired = errors.New("calender api session expired")
+)
+
 type CalendarContentInterface interface {
 	GetType() string
 }
@@ -98,7 +102,9 @@ func (c *OAuthClient) RegisterCalenderEvent(content CalendarContent, accessToken
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode == http.StatusUnauthorized {
+		return ErrCalenderExpired
+	} else if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("Failed to register event: %s", resp.Status)
 	}
 
