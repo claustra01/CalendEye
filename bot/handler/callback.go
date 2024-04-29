@@ -77,11 +77,113 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot) {
 		case webhook.MessageEvent:
 			switch message := e.Message.(type) {
 			case webhook.TextMessageContent:
+
+				refreshToken, err := db.GetRefreshToken(e.Source.(webhook.UserSource).UserId)
+				if err != nil {
+					log.Printf("Failed to get refresh token: %+v\n", err)
+					replyText := fmt.Sprintf("まずはこのリンクからGoogleでログインしてね!!\n%s", liffUrl)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage(replyText),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				googleClient := google.NewOAuthClient(context.Background())
+				accessToken, err := googleClient.GetAccessToken(refreshToken)
+				if err != nil {
+					log.Printf("Failed to get access token: %+v\n", err)
+					replyText := fmt.Sprintf("まずはこのリンクからGoogleでログインしてね!!\n%s", liffUrl)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage(replyText),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				gpt, err := openai.NewGpt4Vision(context.Background())
+				if err != nil {
+					log.Printf("Failed to create GPT-4 client: %+v\n", err)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("OpenAIのエラーです。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				eventJson, err := gpt.Txt2Txt(message.Text)
+				if err != nil {
+					log.Printf("Failed to convert text to text: %+v\n", err)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("イベントが見つかりませんでした。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				content, err := google.ParseCalendarContent(eventJson)
+				if err != nil {
+					log.Printf("Failed to parse calendar content: %+v\n", err)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("イベントが見つかりませんでした。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
+				err = googleClient.RegisterCalenderEvent(content, accessToken)
+				if err != nil {
+					log.Printf("Failed to register event: %+v\n", err)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage("イベントの登録に失敗しました。"),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
+
 				if _, err = bot.ReplyMessage(
 					&linebot.ReplyMessageRequest{
 						ReplyToken: e.ReplyToken,
 						Messages: []linebot.MessageInterface{
-							linebot.NewTextMessage(message.Text),
+							linebot.NewTextMessage(
+								fmt.Sprintf("カレンダーに「%s」の予定を登録したよ!!\n場所: %s\n開始: %s", content.Summary, content.Location, content.Start.Format("2006-01-02 15:04")),
+							),
 						},
 					},
 				); err != nil {
