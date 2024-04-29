@@ -162,6 +162,21 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot) {
 				}
 
 				err = googleClient.RegisterCalenderEvent(content, accessToken)
+				if err == google.ErrCalenderExpired {
+					log.Printf("Failed to register event: %+v\n", err)
+					replyText := fmt.Sprintf("セッション切れです。再度ログインしてください。\n%s", liffUrl)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage(replyText),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
 				if err != nil {
 					log.Printf("Failed to register event: %+v\n", err)
 					_, err = bot.ReplyMessage(
@@ -328,6 +343,21 @@ func Callback(w http.ResponseWriter, req *http.Request, bot *linebot.LineBot) {
 				}
 
 				err = googleClient.RegisterCalenderEvent(content, accessToken)
+				if err == google.ErrCalenderExpired {
+					log.Printf("Failed to register event: %+v\n", err)
+					replyText := fmt.Sprintf("セッション切れです。再度ログインしてください。\n%s", liffUrl)
+					_, err = bot.ReplyMessage(
+						&linebot.ReplyMessageRequest{
+							ReplyToken: e.ReplyToken,
+							Messages: []linebot.MessageInterface{
+								linebot.NewTextMessage(replyText),
+							},
+						},
+					)
+					if err != nil {
+						log.Print(err)
+					}
+				}
 				if err != nil {
 					log.Printf("Failed to register event: %+v\n", err)
 					_, err = bot.ReplyMessage(
