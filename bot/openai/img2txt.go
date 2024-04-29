@@ -44,8 +44,9 @@ func (c *Gpt4Vision) Img2Txt(img image.Image, format string) (string, error) {
 		return "", err
 	}
 
+	now := time.Now()
 	prompt := fmt.Sprintf(`
-		この後に送る画像は、カレンダーに登録するようなイベントや予定の内容が含まれるような、写真もしくはスクリーンショットです。
+		この後に送る画像は、カレンダーに登録するようなイベントや予定の内容が含まれる、写真もしくはスクリーンショットです。
 		その画像の内容をGoogleカレンダーへ登録するため、以下のような構造体を用意しました。この構造体に展開できるようなJSON文字列を返してください。
 		ただし、時間については特に明示されない限り日本時間（UTC+9）とします。
 		また、Typeについては、「event」「work」「reminder」「unknown」のいずれかとし、eventは遊びなどを示すもの、workは仕事や学業に関するもの、reminderは何らかの期限を表すものとします。
@@ -62,7 +63,7 @@ func (c *Gpt4Vision) Img2Txt(img image.Image, format string) (string, error) {
 			End      time.Time 'json:"end"'
 		}
 		'''
-	`, time.Now().Format("2006"), time.Now().Format("01"), time.Now().Format("02"))
+		`, now.Format("2006"), now.Format("01"), now.Format("02"))
 
 	reqBody := OpenAIRequest{
 		Model: c.model,
